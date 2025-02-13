@@ -15,7 +15,9 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "helmet": "^7.0.0",
+    "express-rate-limit": "^6.7.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
