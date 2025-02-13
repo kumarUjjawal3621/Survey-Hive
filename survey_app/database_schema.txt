@@ -1,0 +1,190 @@
+# Database Schemas for Survey Application
+
+This document outlines all the database schemas required for the survey application. The application uses MongoDB as the database, and Mongoose is used to define schemas and models.
+
+---
+
+## 1. User Schema
+### Purpose:
+Stores information about users (both hosts and participants).
+
+### Fields:
+- `_id` (ObjectId): Unique identifier for the user.
+- `email` (String): User's email address (unique and required).
+- `password` (String): Hashed password for authentication (required).
+- `income_range` (String): User's income range (e.g., "0-20k", "20k-50k").
+- `location` (String): User's current location.
+- `job_type` (String): User's job type (e.g., "Engineer", "Student").
+- `created_at` (Date): Timestamp when the user was created.
+- `updated_at` (Date): Timestamp when the user was last updated.
+
+### Relationships:
+- A user can create multiple surveys (one-to-many relationship with `Survey`).
+- A user can participate in multiple surveys (many-to-many relationship with `Survey` through `Response`).
+
+---
+
+## 2. Survey Schema
+### Purpose:
+Stores information about surveys created by hosts.
+
+### Fields:
+- `_id` (ObjectId): Unique identifier for the survey.
+- `host_id` (ObjectId): Reference to the user who created the survey (required).
+- `title` (String): Title of the survey (required).
+- `description` (String): Description of the survey.
+- `tags` ([String]): List of tags associated with the survey (e.g., "Technology", "Health").
+- `point_value` (Number): Points awarded to participants for completing the survey (required).
+- `participant_limit` (Number): Maximum number of participants allowed for the survey.
+- `created_at` (Date): Timestamp when the survey was created.
+- `updated_at` (Date): Timestamp when the survey was last updated.
+
+### Relationships:
+- A survey belongs to one user (host) (many-to-one relationship with `User`).
+- A survey can have multiple questions (one-to-many relationship with `Question`).
+- A survey can have multiple responses (one-to-many relationship with `Response`).
+
+---
+
+## 3. Question Schema
+### Purpose:
+Stores questions associated with a survey.
+
+### Fields:
+- `_id` (ObjectId): Unique identifier for the question.
+- `survey_id` (ObjectId): Reference to the survey the question belongs to (required).
+- `question_text` (String): The text of the question (required).
+- `question_type` (String): Type of question (e.g., "MCQ", "Text", "Rating") (required).
+- `options` ([String]): List of options for MCQ questions (optional).
+
+### Relationships:
+- A question belongs to one survey (many-to-one relationship with `Survey`).
+
+---
+
+## 4. Response Schema
+### Purpose:
+Stores responses submitted by participants for a survey.
+
+### Fields:
+- `_id` (ObjectId): Unique identifier for the response.
+- `survey_id` (ObjectId): Reference to the survey the response belongs to (required).
+- `user_id` (ObjectId): Reference to the user who submitted the response (required).
+- `answers` ([Object]): List of answers submitted by the user.
+  - Each answer object contains:
+    - `question_id` (ObjectId): Reference to the question.
+    - `answer` (String): The user's answer to the question.
+- `submitted_at` (Date): Timestamp when the response was submitted.
+
+### Relationships:
+- A response belongs to one survey (many-to-one relationship with `Survey`).
+- A response belongs to one user (many-to-one relationship with `User`).
+
+---
+
+## 5. Points Schema
+### Purpose:
+Stores points earned by participants for completing surveys.
+
+### Fields:
+- `_id` (ObjectId): Unique identifier for the points record.
+- `user_id` (ObjectId): Reference to the user who earned the points (required).
+- `survey_id` (ObjectId): Reference to the survey for which points were earned (required).
+- `points_earned` (Number): Points earned by the user for completing the survey (required).
+- `earned_at` (Date): Timestamp when the points were earned.
+
+### Relationships:
+- A points record belongs to one user (many-to-one relationship with `User`).
+- A points record belongs to one survey (many-to-one relationship with `Survey`).
+
+---
+
+## 6. Redemption Schema
+### Purpose:
+Stores redemption requests made by participants to convert points into money.
+
+### Fields:
+- `_id` (ObjectId): Unique identifier for the redemption request.
+- `user_id` (ObjectId): Reference to the user making the redemption request (required).
+- `points_redeemed` (Number): Number of points redeemed (required).
+- `amount` (Number): Amount of money to be paid by the host (calculated based on points).
+- `status` (String): Status of the redemption request (e.g., "Pending", "Completed").
+- `requested_at` (Date): Timestamp when the request was made.
+- `completed_at` (Date): Timestamp when the request was completed.
+
+### Relationships:
+- A redemption request belongs to one user (many-to-one relationship with `User`).
+
+---
+
+## 7. Admin Schema
+### Purpose:
+Stores information about admin users who manage the platform.
+
+### Fields:
+- `_id` (ObjectId): Unique identifier for the admin.
+- `email` (String): Admin's email address (unique and required).
+- `password` (String): Hashed password for authentication (required).
+- `created_at` (Date): Timestamp when the admin was created.
+- `updated_at` (Date): Timestamp when the admin was last updated.
+
+### Relationships:
+- An admin can manage multiple users, surveys, and transactions.
+
+---
+
+## 8. Transaction Schema
+### Purpose:
+Stores payment transactions between hosts and participants.
+
+### Fields:
+- `_id` (ObjectId): Unique identifier for the transaction.
+- `host_id` (ObjectId): Reference to the host making the payment (required).
+- `participant_id` (ObjectId): Reference to the participant receiving the payment (required).
+- `amount` (Number): Amount paid by the host (required).
+- `status` (String): Status of the transaction (e.g., "Pending", "Completed").
+- `created_at` (Date): Timestamp when the transaction was initiated.
+- `completed_at` (Date): Timestamp when the transaction was completed.
+
+### Relationships:
+- A transaction belongs to one host (many-to-one relationship with `User`).
+- A transaction belongs to one participant (many-to-one relationship with `User`).
+
+---
+
+## Summary of Relationships
+1. **User**:
+   - Can create multiple surveys (one-to-many with `Survey`).
+   - Can participate in multiple surveys (many-to-many with `Survey` through `Response`).
+   - Can earn points (one-to-many with `Points`).
+   - Can make redemption requests (one-to-many with `Redemption`).
+
+2. **Survey**:
+   - Belongs to one user (host) (many-to-one with `User`).
+   - Can have multiple questions (one-to-many with `Question`).
+   - Can have multiple responses (one-to-many with `Response`).
+
+3. **Question**:
+   - Belongs to one survey (many-to-one with `Survey`).
+
+4. **Response**:
+   - Belongs to one survey (many-to-one with `Survey`).
+   - Belongs to one user (many-to-one with `User`).
+
+5. **Points**:
+   - Belongs to one user (many-to-one with `User`).
+   - Belongs to one survey (many-to-one with `Survey`).
+
+6. **Redemption**:
+   - Belongs to one user (many-to-one with `User`).
+
+7. **Admin**:
+   - Manages users, surveys, and transactions.
+
+8. **Transaction**:
+   - Belongs to one host (many-to-one with `User`).
+   - Belongs to one participant (many-to-one with `User`).
+
+---
+
+This document provides a comprehensive explanation of all the database schemas required for the survey application. Each schema is designed to support the application's functionality and ensure efficient data management.

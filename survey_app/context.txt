@@ -1,0 +1,83 @@
+    # Survey Web Application - Functional Specification
+
+    ## Overview
+    This web application allows users to host and participate in surveys. Participants earn points, which can be converted into money paid by the survey host. The platform ensures targeted survey distribution based on user profiles and AI-generated tags.
+
+    ## Technology Stack
+    MERN stack
+
+    ## User Roles
+    1. **Participant**: Users who complete surveys to earn points.
+    2. **Host**: Users who create surveys and pay participants.
+    3. **Hybrid User**: Users who act as both host and participant.
+
+    ## Application Flow
+    ### 1. User Registration & Profile Setup
+    - Users sign up using an email ID.
+    - Required fields:
+    - Name
+    - Email (verified via OTP)
+    - Income Range
+    - Current Location
+    - Job Type
+    - User credentials are securely stored with hashed passwords.
+
+    ### 2. Login & Dashboard
+    - Users log in using their email and password.
+    - Dashboard has two tabs:
+    - **Available Surveys**: Lists surveys relevant to the user’s profile.
+    - **Host Surveys**: Allows users to create and manage surveys.
+
+    ### 3. Survey Creation
+    - Hosts can create surveys by providing:
+    - Survey Title
+    - Description
+    - Questions (multiple-choice, short answers, etc.)
+    - Participant Criteria (income range, location, job type)
+    - Reward per participant
+    - AI generates tags based on survey questions to enhance audience reach.
+    - Upon submission, a **QR code** is generated for physical distribution.
+
+    ### 4. Survey Participation
+    - Participants see surveys matching their profile.
+    - They can complete a survey and earn points.
+    - A survey response is saved in the database and marked as completed for that user.
+
+    ### 5. Reward System
+    - Each survey assigns a specific point value.
+    - Points can be converted to money.
+    - Hosts approve payments manually or via an automated process.
+    - Payment is done via third-party APIs (e.g., PayPal, Stripe, or UPI).
+
+    ### 6. Survey Management
+    - Hosts can:
+    - View responses
+    - Approve/reject responses
+    - Close a survey when participant limit is reached
+
+    ### 7. Security & Validation
+    - JWT for secure authentication.
+    - Role-based access control.
+    - Rate limiting to prevent spam.
+
+    ## Additional Features
+    - **Admin Panel**: To monitor surveys and manage users.
+    - **Notifications**: Email or in-app notifications for survey updates.
+    - **Analytics**: Insights into survey responses and participant engagement.
+
+    ## API Endpoints
+    ### User Authentication
+    - `POST /api/auth/register` - Register new user
+    - `POST /api/auth/login` - Authenticate user
+
+    ### Survey Management
+    - `POST /api/surveys/create` - Create a new survey
+    - `GET /api/surveys/relevant` - Fetch relevant surveys
+    - `POST /api/surveys/respond` - Submit survey response
+
+    ### Rewards
+    - `GET /api/rewards/balance` - Fetch user points
+    - `POST /api/rewards/redeem` - Convert points to money
+
+    ## Conclusion
+    This web application provides a streamlined experience for hosting and participating in surveys while ensuring targeted distribution through AI and user profiling. The MERN stack ensures scalability, security, and efficiency.
